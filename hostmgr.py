@@ -104,12 +104,17 @@ elif verb == "enable":
 elif verb == "disable":
     changeGroupState(args[1], False)
 
+# Prints groups and whether or not they're enabled.
+# If an argument is given, prints all the hosts the group contains.
+# list [group]
 elif verb == "list":
     try:
+        group = args[1]
         allItems = ""
-        for item in groups[args[1]][1:]:
+        for item in groups[group][1:]:
             allItems += item + "\n"
         os.system(f"echo '{allItems}' | less")
+
     except IndexError:
         for name in groups:
             print(f"[{'*' if groups[name][0] else ' '}] {name}")
