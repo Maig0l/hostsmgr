@@ -49,3 +49,12 @@ def removeGroup(group):
     except KeyError:
         exit(f" /!\ Group {group} doesn't exit.")
 
+# Assigns new boolean value to the first
+#  item of a group.
+def changeGroupState(group, newState):
+    try:
+        groups[group][0] = newState
+        updateGroupsFile()
+    except KeyError:
+        exit(f" /!\ Group {group} doesn't exit.")
+
