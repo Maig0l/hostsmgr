@@ -5,7 +5,9 @@ import sys
 import os
 
 
-GROUPS_FILE = "groups.json"
+SCRIPT_DIR  = os.path.dirname(
+                        os.path.realpath(__file__)) + "/"
+GROUPS_FILE = SCRIPT_DIR + "groups.json"
 args   = sys.argv[1:]
 groups = json.loads(
                 open(GROUPS_FILE, "r").read())
@@ -24,7 +26,7 @@ def makeFile():
 
             for host in groups[name][1:]:
                 result += hostFormat(host)
-            print(f"Enabled {name}")
+            print(f"Blocked {name}")
 
     return result
 
@@ -133,3 +135,4 @@ elif verb == "make":
 
 else:
     exit(f" /!\ Unknown command: `{verb}`")
+
