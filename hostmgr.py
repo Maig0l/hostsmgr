@@ -22,7 +22,7 @@ def makeFile():
         if groups[name][0]:
             result += f"# {name}\n"
 
-            for host in groups[name][1:-1]:
+            for host in groups[name][1:]:
                 result += hostFormat(host)
             print(f"Enabled {name}")
 
@@ -118,6 +118,18 @@ elif verb == "list":
     except IndexError:
         for name in groups:
             print(f"[{'*' if groups[name][0] else ' '}] {name}")
+
+# make [filename]
+elif verb == "make":
+    try:
+        filename = args[1]
+        with open(filename, "w+") as hostsFile:
+            hostsFile.write(
+                        makeFile())
+
+    except IndexError:
+        print(makeFile())
+        pass
 
 else:
     exit(f" /!\ Unknown command: `{verb}`")
