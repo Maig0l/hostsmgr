@@ -2,6 +2,7 @@
 
 import simplejson as json
 import sys
+import os
 
 
 GROUPS_FILE = "groups.json"
@@ -104,6 +105,14 @@ elif verb == "disable":
     changeGroupState(args[1], False)
 
 elif verb == "list":
-    for name in groups:
-        print(f"[{'*' if groups[name][0] else ' '}] {name}")
+    try:
+        allItems = ""
+        for item in groups[args[1]][1:]:
+            allItems += item + "\n"
+        os.system(f"echo '{allItems}' | less")
+    except IndexError:
+        for name in groups:
+            print(f"[{'*' if groups[name][0] else ' '}] {name}")
 
+else:
+    exit(f" /!\ Unknown command: `{verb}`")
