@@ -29,12 +29,27 @@ def updateGroupsFile():
     open(GROUPS_FILE, "w").write(
                             json.dumps(groups))
 
+# Check if group exists.
+# If not, create it.
+def checkGroup(name):
+    if name not in groups:
+        groups[name] = [True]
+
+def addToGroup(group, hosts=[]):
+    checkGroup(group)
+
+    if hosts == []:
+        raise TypeError("Empty list provided.")
+    else:
+        for host in hosts:
+            groups[group].append(host)
+
+    updateGroupsFile()
+
 # Appends all lines from a file to a group
 #  and saves to groups.json
 def addFromFile(group, filename):
-    # If group doesn't exist, create and enable it
-    if group not in groups:
-        groups[group] = [True]
+    checkGroup(group)
 
     with open(filename, "r") as newHosts:
         for line in newHosts:
