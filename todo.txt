@@ -2,7 +2,6 @@
 - Set [un]block times with csv file
 
 - CLI interface:
-	add [group] [domain]
-	addbulk [group] [file]
-	un/block [group]
 	daemon
+	list [group]
+	make [print]
