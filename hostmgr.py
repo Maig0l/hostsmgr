@@ -17,12 +17,12 @@ def hostFormat(host):
 
 # Returns entire new hosts file (string)
 def makeFile():
-    result = hostFormat("localhost") + "\n"
+    result = hostFormat("localhost")
 
     for name in groups:
         # First item is a boolean indicating enabled state
         if groups[name][0]:
-            result += f"# {name}\n"
+            result += f"\n# {name}\n"
 
             for host in groups[name][1:]:
                 result += hostFormat(host)
@@ -81,7 +81,10 @@ def changeGroupState(group, newState):
 
 
 ## Command-line interface
-verb = args[0]
+try:
+    verb = args[0]
+except IndexError:
+    exit(" /!\ Not enough arguments.")
 
 # add website domain1.com domain2.com
 if   verb == "add":

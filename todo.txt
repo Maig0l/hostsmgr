@@ -3,5 +3,3 @@
 
 - CLI interface:
 	daemon
-	list [group]
-	make [print]
