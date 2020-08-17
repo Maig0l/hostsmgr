@@ -15,6 +15,21 @@ groups = json.loads(
 def hostFormat(host):
     return f"127.0.0.1\t{host}\n"
 
+# Takes an array [hour, minute] and sleeps until
+#  that time of day.
+def waitUntil(dstTime):
+    from datetime import datetime as dt
+    from time     import sleep
+
+    now   = dt.now()
+    until = dt(now.year, now.month, now.day,
+               dstTime[0], dstTime[1],
+               0, now.microsecond)
+
+    while not (now.hour == until.hour and now.minute == until.minute):
+        sleep(15)
+        now = dt.now()
+
 # Returns entire new hosts file (string)
 def makeFile():
     result = hostFormat("localhost")
@@ -103,10 +118,10 @@ elif verb == "addbulk":
     else:
         addFromFile(args[1], args[2])
 
-# [enable|disable] website
-elif verb == "enable":
+# [block|unblock] website
+elif verb == "block":
     changeGroupState(args[1], True)
-elif verb == "disable":
+elif verb == "unblock":
     changeGroupState(args[1], False)
 
 # Prints groups and whether or not they're enabled.
