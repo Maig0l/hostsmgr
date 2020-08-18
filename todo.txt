@@ -1,5 +1,5 @@
 - Choose ip to point blocked domains to
-- Set [un]block times with csv file
-
 - CLI interface:
 	daemon
+- Check existance of files at startup
+- Check if values are valid on startup

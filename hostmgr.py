@@ -1,5 +1,7 @@
 #!/usr/bin/python3
 
+from   time     import sleep
+from   datetime import datetime as dt
 import simplejson as json
 import sys
 import os
@@ -8,27 +10,64 @@ import os
 SCRIPT_DIR  = os.path.dirname(
                         os.path.realpath(__file__)) + "/"
 GROUPS_FILE = SCRIPT_DIR + "groups.json"
+CRON_FILE   = SCRIPT_DIR + "cron.tsv"
+
 args   = sys.argv[1:]
 groups = json.loads(
                 open(GROUPS_FILE, "r").read())
+
+with open(CRON_FILE, 'r') as cronF:
+    jobs = []
+    for line in cronF:
+        # Allow comments and blank lines
+        if line[0] == '#' or line[0] == '\n':
+            continue
+
+        # Delete newline characters
+        line = line[:-1]
+        columns = line.split('\t')
+
+        jobDict = {    "dow":     columns[0].split(','),
+                      "hour": int(columns[1]),
+                    "minute": int(columns[2]),
+                   "command":     columns[3],
+                    "groups":     columns[4].split(',')}
+
+        jobs.append(jobDict)
+
 
 def hostFormat(host):
     return f"127.0.0.1\t{host}\n"
 
 # Takes an array [hour, minute] and sleeps until
 #  that time of day.
-def waitUntil(dstTime):
-    from datetime import datetime as dt
-    from time     import sleep
-
+def checkTime(dstHour, dstMinute):
     now   = dt.now()
     until = dt(now.year, now.month, now.day,
-               dstTime[0], dstTime[1],
+               dstHour,  dstMinute,
                0, now.microsecond)
 
-    while not (now.hour == until.hour and now.minute == until.minute):
-        sleep(15)
-        now = dt.now()
+    if (  now.hour == until.hour and
+        now.minute == until.minute):
+        return True
+    return False
+
+def execJobs():
+    weekday = dt.now().isoweekday()
+
+    for job in jobs:
+        if weekday in job["dow"] or \
+               '*' in job["dow"]:
+
+            if checkTime(job["hour"],
+                         job["minute"]):
+
+                if   job["command"] == "block":
+                    changeGroupState(job["groups"], True)
+                elif job["command"] == "unblock":
+                    changeGroupState(job["groups"], False)
+                else:
+                    raise Exception("Invalid command in cron.tsv")
 
 # Returns entire new hosts file (string)
 def makeFile():
@@ -89,7 +128,13 @@ def removeGroup(group):
 #  item of a group.
 def changeGroupState(group, newState):
     try:
-        groups[group][0] = newState
+        if isinstance(group, str):
+            groups[group][0] = newState
+
+        if isinstance(group, list):
+            for name in group:
+                groups[name][0] = newState
+
         updateGroupsFile()
     except KeyError:
         exit(f" /!\ Group {group} doesn't exit.")
