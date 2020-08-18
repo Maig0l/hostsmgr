@@ -196,6 +196,14 @@ elif verb == "make":
         print(makeFile())
         pass
 
+elif verb == "daemon":
+    import daemon
+    
+    with daemon.DaemonContext():
+        while True:
+            execJobs()
+            sleep(60)
+
 else:
     exit(f" /!\ Unknown command: `{verb}`")
 
