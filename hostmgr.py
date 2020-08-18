@@ -11,6 +11,7 @@ SCRIPT_DIR  = os.path.dirname(
                         os.path.realpath(__file__)) + "/"
 GROUPS_FILE = SCRIPT_DIR + "groups.json"
 CRON_FILE   = SCRIPT_DIR + "cron.tsv"
+DST_IP      = "127.0.0.1"
 
 args   = sys.argv[1:]
 groups = json.loads(
@@ -36,8 +37,8 @@ with open(CRON_FILE, 'r') as cronF:
         jobs.append(jobDict)
 
 
-def hostFormat(host):
-    return f"127.0.0.1\t{host}\n"
+def hostFormat(host, dstIp=DST_IP):
+    return f"{dstIp}\t{host}\n"
 
 # Takes an array [hour, minute] and sleeps until
 #  that time of day.
@@ -70,8 +71,9 @@ def execJobs():
                     raise Exception("Invalid command in cron.tsv")
 
 # Returns entire new hosts file (string)
-def makeFile():
-    result = hostFormat("localhost")
+def makeFile(verbose=False):
+    result =  hostFormat("localhost", "127.0.0.1")
+    result += hostFormat(os.uname()[1], "127.0.0.1")
 
     for name in groups:
         # First item is a boolean indicating enabled state
@@ -80,7 +82,9 @@ def makeFile():
 
             for host in groups[name][1:]:
                 result += hostFormat(host)
-            print(f"Blocked {name}")
+
+            if verbose:
+                print(f"Blocked {name}")
 
     return result
 
@@ -190,7 +194,7 @@ elif verb == "make":
         filename = args[1]
         with open(filename, "w+") as hostsFile:
             hostsFile.write(
-                        makeFile())
+                        makeFile(verbose=True))
 
     except IndexError:
         print(makeFile())

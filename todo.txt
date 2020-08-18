@@ -1,5 +1,2 @@
-- Choose ip to point blocked domains to
-- CLI interface:
-	daemon
 - Check existance of files at startup
 - Check if values are valid on startup
